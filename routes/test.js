@@ -18,7 +18,6 @@ var testUrl = helpers.getDataByMinute(startString, endString)
 var options = {
     rejectUnauthorized: false, //interesting, find out why
     method: 'GET',
-    // url: 'https://api.enertiv.com:443/api/location/8639f0e6-1623-4e60-8164-a853fb807917/data/?fromTime=2015-03-31T02%3A17%3A54.745Z&toTime=2015-03-31T02%3A47%3A54.745Z&interval=min&reading_type=3',
     url: testUrl,
     headers: {
         'Authorization': helpers.authKey
