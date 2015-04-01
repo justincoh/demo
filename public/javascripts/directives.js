@@ -87,9 +87,9 @@ app.directive('energyGraph', function() {
                 .attr("class", "line")
                 .attr("d", line);
 
-            tick();
+            
 
-            function tick() {
+            scope.tick=function() {
                 // push a new data point onto the back
                 data.push({
                     'NYC OfficeTotalCost': 0.0033,
@@ -98,6 +98,9 @@ app.directive('energyGraph', function() {
                     'NYC Office': 0.9422
                 });
 
+                var distanceBetweenTicks = x(data[1].date)-x(data[2].date)
+                
+
                 // redraw the line, and slide it to the left
                 path
                     .attr("d", line)
@@ -105,10 +108,15 @@ app.directive('energyGraph', function() {
                     .transition()
                     .duration(2500)
                     .ease("linear")
-                    // .attr("transform", "translate(" + x(-1) + ",0)")
+                    .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
                     //need to translate this 1 minute per tick
                     // .each("end", tick);
 
+
+                    console.log(data)
+                    // console.log(test)
+                    
+                    // console.log(x(min)-x())
                 // pop the old data point off the front
                 data.shift();
 
