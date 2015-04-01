@@ -39,7 +39,7 @@ app.controller('MainCtrl', function($scope, $http) {
         }, {
             'NYC OfficeTotalCost': 0.0579,
             x: '2015-03-31T20:55:00Z',
-            'NYC Office': 16.5323
+            'NYC Office': 10.5323
         }
         // , {  //Cutting out for graph update testing later
         //     'NYC OfficeTotalCost': 0.0033,

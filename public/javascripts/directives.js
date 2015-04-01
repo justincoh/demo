@@ -20,12 +20,10 @@ app.directive('energyGraph', function() {
                 return d.date;
             });
 
-            var n = scope.testData.data.length,
-                random = d3.random.normal(0, .2),
-                // data = d3.range(n).map(random);
-                data = scope.testData.data;
+            // var n = scope.testData.data.length,
+                // random = d3.random.normal(0, .2),
 
-            console.log(scope.testData.data);
+            var data = scope.testData.data;
 
             var margin = {
                     top: 20,
@@ -36,18 +34,12 @@ app.directive('energyGraph', function() {
                 width = 960 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom;
 
-            // var x = d3.scale.linear()
-            //     .domain([min, max])
-            //     .range([0, width]);
-
             var x = d3.time.scale()
                 .domain([min, max])
-            	.range([0, width]);
-
-
+                .range([0, width]);
 
             var y = d3.scale.linear()
-                .domain([0, 20])
+                .domain([0, 12])
                 .range([height, 0]);
 
             var line = d3.svg.line()
@@ -55,7 +47,6 @@ app.directive('energyGraph', function() {
                     return x(d.date);
                 })
                 .y(function(d, i) {
-
                     return y(d['NYC Office']);
                 });
 
@@ -71,7 +62,7 @@ app.directive('energyGraph', function() {
                 .attr("width", width)
                 .attr("height", height);
 
-            svg.append("g")
+            var xAxis = svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + y(0) + ")")
                 .call(d3.svg.axis().scale(x).orient("bottom"));
@@ -87,9 +78,10 @@ app.directive('energyGraph', function() {
                 .attr("class", "line")
                 .attr("d", line);
 
-            
 
-            scope.tick=function() {
+
+            scope.tick = function() {
+                var duration = 1500;
                 // push a new data point onto the back
                 data.push({
                     'NYC OfficeTotalCost': 0.0033,
@@ -98,26 +90,42 @@ app.directive('energyGraph', function() {
                     'NYC Office': 0.9422
                 });
 
-                var distanceBetweenTicks = x(data[1].date)-x(data[2].date)
-                
+                var distanceBetweenTicks = x(data[1].date) - x(data[2].date)
+
+                //for using d3.zoom, later
+                // var totalDistance = x(data[0].date) - x(data[data.length-1].date)
+                // console.log('TOTAL DIST ',totalDistance/data.length)
+
 
                 // redraw the line, and slide it to the left
                 path
                     .attr("d", line)
                     .attr("transform", null)
                     .transition()
-                    .duration(2500)
+                    .duration(duration)
                     .ease("linear")
                     .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
-                    //need to translate this 1 minute per tick
                     // .each("end", tick);
-
-
-                    console.log(data)
-                    // console.log(test)
                     
-                    // console.log(x(min)-x())
+                x = d3.time.scale() 
+                //adding newest date to x axis scaling
+                //could also translate this the new intermediate tick distance
+                //and have all times show with this graph just getting longer
+                    .domain([data[1].date, data[data.length-1].date])
+                    .range([0, width]);
+                
+                //Slides a new point onto the end of the graph
+                    xAxis
+                        .transition()
+                        .duration(duration)
+                        .ease('linear')
+                        // .attr("transform", "translate(0," + y(0) + ")")
+                        .call(d3.svg.axis().scale(x).orient("bottom"));
+                    
+
+                    // console.log(xAxis.call(d3.svg.axis().scale(x)))
                 // pop the old data point off the front
+                //figure out how to 
                 data.shift();
 
             }
