@@ -61,18 +61,7 @@ app.directive('energyGraph', function($interval) {
                     .range([height, 0]);
 
                 var line = d3.svg.line()
-                    // .interpolate(function(d,i){
-
-                //     console.log('interpolator d',d)
-                //     console.log('interpolator i',i)
-                //     return 
-                //     // return 'basis'
-                // }) 
-                //interpolator has to go in here, 
-                //but has to be based off of index in data
-                .x(function(d, i) {
-                        // console.log('dx',d)
-                        // console.log('ix',i)
+                    .x(function(d, i) {
                         return x(d.date);
                     })
                     .y(function(d, i) {
@@ -133,11 +122,6 @@ app.directive('energyGraph', function($interval) {
                 //     .attr("class","y axis")
                 //     .call(yAxisZoom)    
 
-                // function zoomed() {
-                //     svg.select(".x.axis").call(xAxisZoom);
-                //     // svg.select(".y.axis").call(yAxis);
-                // }
-
 
                 svg.append('path')
                     .attr('class', 'line')
@@ -149,38 +133,72 @@ app.directive('energyGraph', function($interval) {
 
                 draw();
 
+
+
+                function buildRectangle(dateObj){
+                    d3.select('rect.cover').remove();
+                    
+                    var rectPosition = x(dateObj)
+
+
+                    var rect = svg.append('rect')
+                        .attr('class', 'cover')
+                        .attr('x', rectPosition)
+                        .attr('y', 0)
+                        .attr("width", width - rectPosition)
+                        .attr("height", height)
+                        .style('fill', 'steelblue');
+                }
+
+
+                var times = scope.timesOnScope;
+                var thirdToLast = times[times.length - 3];
+                var rectangleTime = new Date(thirdToLast);
+                buildRectangle(rectangleTime);
+
+                var intervalTimer = 50;
+                $interval(function(){
+                    var rect = svg.select('rect.cover')
+                    rectangleTime.setTime(rectangleTime.getTime()+intervalTimer)
+                    buildRectangle(rectangleTime)
+                },intervalTimer)
+
                 function draw() {
                     svg.select("g.x.axis").call(xAxisZoom);
 
-                    console.log('X Domain ',x.domain())
-                    var testDate = new Date();
-                    testDate.setHours(16);
-                    testDate.setMinutes(49);
-
-                    console.log('TEST DATE ',x(new Date(scope.timesOnScope[scope.timesOnScope.length - 2])))
-                    //THIS gives the X position that the Rect is going to have to overlap
-
+                    // var times = scope.timesOnScope;
+                    // var thirdToLast = times[times.length - 3];
+                    // var rectPosition = x(new Date(thirdToLast))
 
                     // svg.select("g.y.axis").call(yAxis);
                     // svg.select("path.area").attr("d", area);
                     svg.select("path.line").attr("d", line);
-                    // svg.append("rect") //has to be here for zooming
-                    //     .attr('class', 'background')
-                    //     .attr("width", width)
-                    //     .attr("height", height)
-                    //     .style('fill', 'white'); 
-                    //     //get the positioning right on this one and you're golden
-                }
 
-                // var path = svg.append("g")
-                //     .attr("clip-path", "url(#clip)")
-                //     .append("path")
-                //     .datum(data)
-                //     .attr("class", "line")
-                //     .attr("d", line);
-                // .on('mouseover',function(d){
-                //     console.log('mouseover ',d)
-                // })
+                    // d3.select('rect.cover').remove(); //refactor this, too heavy
+                    // var rect = svg.append("rect") //has to be here for zooming
+                    //     .attr('class', 'cover')
+                    //     .attr('x', rectPosition)
+                    //     .attr('y', 0)
+                    //     .attr("width", width - rectPosition)
+                    //     .attr("height", height)
+                    //     .style('fill', 'steelblue');
+
+
+                    var pxDiff = x(new Date(scope.timesOnScope[1])) - x(new Date(scope.timesOnScope[0]))
+
+                    //set the position of the rectangle based off a Date() originally
+                    //and increment that date every X ms
+                    //won't have to worry about re-drawing it on zoom cuz
+                    //itll just happen anyway
+
+                    //this needs to be based off of the end of the path data
+                    //so it doesn't snap back every time you zoom
+                    // rect  
+                    //     .transition()
+                    //     .duration(60000)
+                    //     .ease('linear')
+                    //     .attr("transform", "translate(" + (pxDiff) + ",0)")
+                }
 
                 scope.tick = function() {
                     console.log('HIT', Date())
@@ -191,54 +209,15 @@ app.directive('energyGraph', function($interval) {
                     var newData = scope.tickDataArray.shift()
                     data.push(newData);
 
-                    console.log('NEWDATA ', newData, x(newData.date), y(newData['NYC Office']))
-                        // console.log('LINE ',line()(newData))
-                        // need to interpolate from end of current path to this point
-
-
-                    // var pathTween = function(d,i,a){
-                    //     console.log('Tween this ',this)
-                    //     return d3.interpolate()
-                    // }
-
-
-                    //return the path attr with new stuff concatted ont he end
-
                     var path = svg.select('path.line');
                     path
                         .datum(data)
-                        .attr("d", line) //could throw an IF in here, based on data index TODO
-                        // .attr("transform", null)
+                        .attr("d", line)
                         .transition()
                         .duration(duration)
-                        // .attr('d',function(){
-                        //     return path.attr('d').concat(x(newData.date),',',y(newData['NYC Office']))
-                        // })
                         .ease("linear")
-                        // .attrTween('d',pathTween)
-                        // .attr("transform", "translate(" + (width/7) + ",0)") //moves the entire path
-                        .each("end", scope.tick);
-                    // console.log('TOTAL DIST ',totalDistance/data.length
+                        .each('end', scope.tick)
 
-
-                    //rescaling has to be done after path draw
-                    // x = d3.time.scale()
-                    //     //adding newest date to x axis scaling
-                    //     //figure out how to get behavior.zoom to work
-                    //     .domain([data[1].date, data[data.length - 1].date])
-                    //     .range([0, width]);
-
-                    //Slides axes left 1 minute
-                    //No need with Zoom
-                    // xAxis
-                    //     .transition()
-                    //     .duration(duration)
-                    //     .ease('linear')
-                    //     // .attr("transform", "translate(0," + y(0) + ")")
-                    //     .call(d3.svg.axis().scale(x).orient("bottom"));
-
-
-                    //console.log(xAxis.call(d3.svg.axis().scale(x)))
 
                     //pop the old data point off the front
                     // data.shift();

@@ -2,8 +2,6 @@
 
 app.controller('MainCtrl', function($scope, data, $interval) {
 
-
-
     // var $scope.timesOnScope={};
     $scope.timesOnScope = [];
     //for preventing dupes later, am going to have to overlap request 
@@ -11,9 +9,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
 
     $scope.populate = function() {
         var end = new Date(Date.now() - 120000); //offsetting by 2 minute to make sure the data is really there
-        // var start = new Date(Date.now() - 900000); //900000 ms in 15 minutes
         var start = new Date();
-        start.setHours(16);
+        start.setHours(17);
         start.setMinutes(35);
 
         data.get({
