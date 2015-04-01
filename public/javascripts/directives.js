@@ -6,10 +6,6 @@ app.directive('energyGraph', function($interval) {
         templateUrl: 'templates/energyGraph.html',
         link: function(scope, element, attrs) {
 
-
-            // $interval(function(){
-            //     console.log('DIRECTIVE INTERVAL')
-            // },4000)
             //building graph
             //build off of viewport width
             
@@ -80,14 +76,19 @@ app.directive('energyGraph', function($interval) {
                     .datum(data)
                     .attr("class", "line")
                     .attr("d", line);
+                    // .on('mouseover',function(d){
+                    //     console.log('mouseover ',d)
+                    // })
 
                 scope.tick = function() {
                     
-
                     var duration = 60000;
                     // push a new data point onto the back
                     data = scope.energyData;
-                    data.push(scope.tickDataArray.shift());
+
+                    var newData = scope.tickDataArray.shift()
+                    
+                    data.push(newData);
 
 
                     var distanceBetweenTicks = x(data[1].date) - x(data[2].date)
