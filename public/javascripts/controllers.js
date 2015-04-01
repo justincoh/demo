@@ -40,18 +40,24 @@ app.controller('MainCtrl', function($scope, data, $interval) {
             startTime: fiveMinutes.toISOString(),
             endTime: now.toISOString()
         }, function(res) {
-            res.data.forEach(function(dataPoint) {
-                // if(timesOnScope.hasOwnProperty(dataPoint.x)){
-                if (timesOnScope.indexOf(dataPoint.x) !== -1) {
-                    // console.log('dataPoint already exists', dataPoint)
-                } else {
-                    dataPoint.date = new Date(dataPoint.x)
-                    // timesOnScope[dataPoint.x] = 1;
-                    timesOnScope.push(dataPoint.x)
-                    $scope.tickDataArray.push(dataPoint);
-                    console.log('PUSHED ', dataPoint)
-                }
-            });
+
+            if (typeof res.data !== 'undefined') {
+                res.data.forEach(function(dataPoint) {
+                    // if(timesOnScope.hasOwnProperty(dataPoint.x)){
+                    if (timesOnScope.indexOf(dataPoint.x) !== -1) {
+                        // console.log('dataPoint already exists', dataPoint)
+                    } else {
+                        dataPoint.date = new Date(dataPoint.x)
+                            // timesOnScope[dataPoint.x] = 1;
+                        timesOnScope.push(dataPoint.x)
+                        $scope.tickDataArray.push(dataPoint);
+                        console.log('PUSHED ', dataPoint)
+                    }
+                })
+            } else{
+                console.log('BAD RES ',res)
+            }
+
 
         })
     }

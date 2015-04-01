@@ -52,17 +52,19 @@ app.directive('energyGraph', function($interval) {
                     .range([height, 0]);
 
                 var line = d3.svg.line()
+                    // .interpolate('cardinal')
                     .x(function(d, i) {
                         return x(d.date);
                     })
                     .y(function(d, i) {
                         return y(d['NYC Office']);
-                    });
+                    })
+
 
                 var zoom = d3.behavior.zoom()
                     .x(x)
                     // .y(y)
-                    .scaleExtent([1, 1400])
+                    .scaleExtent([1, 144])
                     .on("zoom", draw);
 
                 var svg = d3.select("#graphContainer").append("svg")
@@ -144,35 +146,43 @@ app.directive('energyGraph', function($interval) {
                 // })
 
                 scope.tick = function() {
+                    console.log('HIT', Date())
 
                     var duration = 60000;
                     // push a new data point onto the back
                     data = scope.energyData;
-
                     var newData = scope.tickDataArray.shift()
-
                     data.push(newData);
 
+                    console.log('NEWDATA ',newData, x(newData.date),y(newData['NYC Office']))
+                    // console.log('LINE ',line()(newData))
+                    // need to interpolate from end of current path to this point
 
-                    // var distanceBetweenTicks = x(data[1].date) - x(data[2].date)
 
-                    //for using d3.zoom, later
-                    // var totalDistance = x(data[0].date) - x(data[data.length-1].date)
+                    // var pathTween = function(d,i,a){
+                    //     console.log('Tween this ',this)
+                    //     return d3.interpolate()
+                    // }
 
-                    // redraw the line, and slide it to the left
-                    
+
+                    //return the path attr with new stuff concatted ont he end
+
                     var path =svg.select('path.line');
                     path
-                        .data([data])
+                        // .data([data])
                         .attr("d", line)
-                        .attr("transform", null)
+                        // .attr("transform", null)
                         .transition()
                         .duration(duration)
+                        // .attr('d',function(){
+                        //     return path.attr('d').concat(x(newData.date),',',y(newData['NYC Office']))
+                        // })
                         .ease("linear")
-                        // .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
+                        // .attrTween('d',pathTween)
+                        // .attr("transform", "translate(" + (width/7) + ",0)") //moves the entire path
                         .each("end", scope.tick);
                     // console.log('TOTAL DIST ',totalDistance/data.length
-
+                        
 
                     //rescaling has to be done after path draw
                     // x = d3.time.scale()
