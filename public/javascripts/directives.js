@@ -8,8 +8,8 @@ app.directive('energyGraph', function($interval) {
 
             //building graph
             //build off of viewport width
-            
-            scope.buildGraph=function(energyData) {
+
+            scope.buildGraph = function(energyData) {
                 var data = energyData;
 
                 var max = d3.max(data, function(d) {
@@ -49,11 +49,23 @@ app.directive('energyGraph', function($interval) {
                         return y(d['NYC Office']);
                     });
 
+                var zoom = d3.behavior.zoom()
+                    .x(x)
+                    .y(y)
+                    .scaleExtent([1, 10])
+                    .on("zoom", zoomed);
+
                 var svg = d3.select("#graphContainer").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                     .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .call(zoom);
+
+                svg.append("rect")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .style('fill', 'white');
 
                 svg.append("defs").append("clipPath")
                     .attr("id", "clip")
@@ -66,9 +78,29 @@ app.directive('energyGraph', function($interval) {
                     .attr("transform", "translate(0," + y(0) + ")")
                     .call(d3.svg.axis().scale(x).orient("bottom"));
 
+                var xAxisZoom = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    // .tickSize(-height);
+
+                svg.append('g')
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + y(0) + ")")
+                    .call(xAxisZoom)
+
                 svg.append("g")
                     .attr("class", "y axis")
                     .call(d3.svg.axis().scale(y).orient("left"));
+
+                // var yAxis = d3.svg.axis()
+                //     .scale(y)
+                //     .orient("left")
+                //     .ticks(5)
+
+                function zoomed() {
+                    svg.select(".x.axis").call(xAxisZoom);
+                    // svg.select(".y.axis").call(yAxis);
+                }
 
                 var path = svg.append("g")
                     .attr("clip-path", "url(#clip)")
@@ -76,18 +108,18 @@ app.directive('energyGraph', function($interval) {
                     .datum(data)
                     .attr("class", "line")
                     .attr("d", line);
-                    // .on('mouseover',function(d){
-                    //     console.log('mouseover ',d)
-                    // })
+                // .on('mouseover',function(d){
+                //     console.log('mouseover ',d)
+                // })
 
                 scope.tick = function() {
-                    
+
                     var duration = 60000;
                     // push a new data point onto the back
                     data = scope.energyData;
 
                     var newData = scope.tickDataArray.shift()
-                    
+
                     data.push(newData);
 
 
@@ -95,7 +127,7 @@ app.directive('energyGraph', function($interval) {
 
                     //for using d3.zoom, later
                     // var totalDistance = x(data[0].date) - x(data[data.length-1].date)
-                    
+
                     // redraw the line, and slide it to the left
                     path
                         .attr("d", line)
@@ -106,7 +138,7 @@ app.directive('energyGraph', function($interval) {
                         .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
                         .each("end", scope.tick);
                     // console.log('TOTAL DIST ',totalDistance/data.length
-                    
+
 
                     //rescaling has to be done after path draw
                     x = d3.time.scale()
@@ -125,7 +157,7 @@ app.directive('energyGraph', function($interval) {
 
 
                     //console.log(xAxis.call(d3.svg.axis().scale(x)))
-                    
+
                     //pop the old data point off the front
                     data.shift();
 
