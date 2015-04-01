@@ -48,29 +48,29 @@ app.directive('energyGraph', function($interval) {
                     .range([0, width]);
 
 
-                var maxPower = d3.max(data,function(d){
+                var maxPower = d3.max(data, function(d) {
                     return data['NYC Office']
                 });
-                var minPower = d3.min(data,function(d){
+                var minPower = d3.min(data, function(d) {
                     return data['NYC Office']
                 });
 
                 var y = d3.scale.linear()
-                .domain([0,20])
+                    .domain([0, 20])
                     // .domain([minPower*.9, maxPower*1.1])
                     .range([height, 0]);
 
                 var line = d3.svg.line()
                     // .interpolate(function(d,i){
 
-                    //     console.log('interpolator d',d)
-                    //     console.log('interpolator i',i)
-                    //     return 
-                    //     // return 'basis'
-                    // }) 
-                    //interpolator has to go in here, 
-                    //but has to be based off of index in data
-                    .x(function(d, i) {
+                //     console.log('interpolator d',d)
+                //     console.log('interpolator i',i)
+                //     return 
+                //     // return 'basis'
+                // }) 
+                //interpolator has to go in here, 
+                //but has to be based off of index in data
+                .x(function(d, i) {
                         // console.log('dx',d)
                         // console.log('ix',i)
                         return x(d.date);
@@ -94,6 +94,7 @@ app.directive('energyGraph', function($interval) {
                     .call(zoom);
 
                 svg.append("rect") //has to be here for zooming
+                    .attr('class', 'background')
                     .attr("width", width)
                     .attr("height", height)
                     .style('fill', 'white');
@@ -153,6 +154,12 @@ app.directive('energyGraph', function($interval) {
                     // svg.select("g.y.axis").call(yAxis);
                     // svg.select("path.area").attr("d", area);
                     svg.select("path.line").attr("d", line);
+                    // svg.append("rect") //has to be here for zooming
+                    //     .attr('class', 'background')
+                    //     .attr("width", width)
+                    //     .attr("height", height)
+                    //     .style('fill', 'white'); 
+                    //     //get the positioning right on this one and you're golden
                 }
 
                 // var path = svg.append("g")

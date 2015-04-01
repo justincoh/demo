@@ -13,8 +13,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
         var end = new Date(Date.now() - 120000); //offsetting by 2 minute to make sure the data is really there
         // var start = new Date(Date.now() - 900000); //900000 ms in 15 minutes
         var start = new Date();
-        start.setHours(12);
-        start.setMinutes(0);
+        start.setHours(14);
+        start.setMinutes(20);
 
         data.get({
             startTime: start.toISOString(),
