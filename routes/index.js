@@ -1,18 +1,41 @@
 var express = require('express');
 var router = express.Router();
 var helpers = require('./helpers.js');
+var request = require('request');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index');
+    res.render('index');
 });
 
-router.get('/?',function(req,res){
+router.get('/data?', function(req, res) {
+	console.log("QUERY ROUTE HIT ",req.query)
+    var startTime = req.query.startTime;
+    var endTime = req.query.endTime;
 
-	console.log('QUERY ROUTE HIT ',req.query)
+    var requestUrl = helpers.getDataByMinute(startTime, endTime)
 
-	res.status(200).send();
+    var requestOptions = {
+        rejectUnauthorized: false, //interesting, find out why
+        method: 'GET',
+        url: requestUrl,
+        headers: {
+            'Authorization': helpers.authKey
+        }
+    };
+
+    request(requestOptions,function(err,response){
+    	if(err) {console.log('err',err); res.json(err)};
+    	var enertivRes = JSON.parse(response.body);
+    	console.log('enertivRes ',enertivRes)
+    	res.json(enertivRes);
+    })
+
+
 })
+
+
+
 
 
 module.exports = router;
