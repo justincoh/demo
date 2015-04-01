@@ -38,7 +38,7 @@ app.directive('energyGraph', function($interval) {
                     .range([0, width]);
 
                 var y = d3.scale.linear()
-                    .domain([0, 12])
+                    .domain([0, 20])
                     .range([height, 0]);
 
                 var line = d3.svg.line()
