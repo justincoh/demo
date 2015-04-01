@@ -4,8 +4,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
 
 
 
-    // var timesOnScope={};
-    var timesOnScope = [];
+    // var $scope.timesOnScope={};
+    $scope.timesOnScope = [];
     //for preventing dupes later, am going to have to overlap request 
     //and filter dupes due to weird api responses
 
@@ -13,8 +13,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
         var end = new Date(Date.now() - 120000); //offsetting by 2 minute to make sure the data is really there
         // var start = new Date(Date.now() - 900000); //900000 ms in 15 minutes
         var start = new Date();
-        start.setHours(14);
-        start.setMinutes(20);
+        start.setHours(16);
+        start.setMinutes(35);
 
         data.get({
             startTime: start.toISOString(),
@@ -22,8 +22,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
         }, function(res) {
             res.data.forEach(function(dataPoint) {
                 dataPoint.date = new Date(dataPoint.x);
-                // timesOnScope[dataPoint.x]=1;
-                timesOnScope.push(dataPoint.x);
+                // $scope.timesOnScope[dataPoint.x]=1;
+                $scope.timesOnScope.push(dataPoint.x);
             })
             $scope.allData = res.data;
             $scope.energyData = res.data.slice(1, res.data.length - 2);
@@ -46,13 +46,13 @@ app.controller('MainCtrl', function($scope, data, $interval) {
 
             if (typeof res.data !== 'undefined') {
                 res.data.forEach(function(dataPoint) {
-                    // if(timesOnScope.hasOwnProperty(dataPoint.x)){
-                    if (timesOnScope.indexOf(dataPoint.x) !== -1) {
+                    // if($scope.timesOnScope.hasOwnProperty(dataPoint.x)){
+                    if ($scope.timesOnScope.indexOf(dataPoint.x) !== -1) {
                         // console.log('dataPoint already exists', dataPoint)
                     } else {
                         dataPoint.date = new Date(dataPoint.x)
-                            // timesOnScope[dataPoint.x] = 1;
-                        timesOnScope.push(dataPoint.x)
+                            // $scope.timesOnScope[dataPoint.x] = 1;
+                        $scope.timesOnScope.push(dataPoint.x)
                         $scope.tickDataArray.push(dataPoint);
                         console.log('PUSHED ', dataPoint)
                     }

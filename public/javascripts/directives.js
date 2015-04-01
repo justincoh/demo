@@ -151,6 +151,16 @@ app.directive('energyGraph', function($interval) {
 
                 function draw() {
                     svg.select("g.x.axis").call(xAxisZoom);
+
+                    console.log('X Domain ',x.domain())
+                    var testDate = new Date();
+                    testDate.setHours(16);
+                    testDate.setMinutes(49);
+
+                    console.log('TEST DATE ',x(new Date(scope.timesOnScope[scope.timesOnScope.length - 2])))
+                    //THIS gives the X position that the Rect is going to have to overlap
+
+
                     // svg.select("g.y.axis").call(yAxis);
                     // svg.select("path.area").attr("d", area);
                     svg.select("path.line").attr("d", line);
