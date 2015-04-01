@@ -33,6 +33,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
         })
     }
 
+    $scope.populate();
+
     $scope.testGet = function() {
         var now = new Date(Date.now());
         var fiveMinutes = new Date(Date.now() - 300000)

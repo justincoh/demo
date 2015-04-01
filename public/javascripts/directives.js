@@ -61,6 +61,7 @@ app.directive('energyGraph', function($interval) {
                     .range([height, 0]);
 
                 var line = d3.svg.line()
+                    .interpolate('cardinal')
                     .x(function(d, i) {
                         return x(d.date);
                     })
@@ -72,7 +73,7 @@ app.directive('energyGraph', function($interval) {
                 var zoom = d3.behavior.zoom()
                     .x(x)
                     // .y(y)
-                    .scaleExtent([1, 144])
+                    .scaleExtent([1, 288])
                     .on("zoom", draw);
 
                 var svg = d3.select("#graphContainer").append("svg")
@@ -111,8 +112,13 @@ app.directive('energyGraph', function($interval) {
 
                 svg.append("g")
                     .attr("class", "y axis")
-                    .call(d3.svg.axis().scale(y).orient("left"));
-
+                    .call(d3.svg.axis().scale(y).orient("left"))
+                    .append('text')
+                    .text('KW')
+                    .style('font-size','16px')
+                    // .style('text-anchor','end')
+                    .attr('x',5)
+                    .attr('y',5)
                 // var yAxisZoom = d3.svg.axis()
                 //     .scale(y)
                 //     .orient("left")
@@ -147,7 +153,7 @@ app.directive('energyGraph', function($interval) {
                         .attr('y', 0)
                         .attr("width", width - rectPosition)
                         .attr("height", height)
-                        .style('fill', 'steelblue');
+                        .style('fill', 'white');
                 }
 
 
@@ -165,44 +171,12 @@ app.directive('energyGraph', function($interval) {
 
                 function draw() {
                     svg.select("g.x.axis").call(xAxisZoom);
-
-                    // var times = scope.timesOnScope;
-                    // var thirdToLast = times[times.length - 3];
-                    // var rectPosition = x(new Date(thirdToLast))
-
-                    // svg.select("g.y.axis").call(yAxis);
-                    // svg.select("path.area").attr("d", area);
                     svg.select("path.line").attr("d", line);
-
-                    // d3.select('rect.cover').remove(); //refactor this, too heavy
-                    // var rect = svg.append("rect") //has to be here for zooming
-                    //     .attr('class', 'cover')
-                    //     .attr('x', rectPosition)
-                    //     .attr('y', 0)
-                    //     .attr("width", width - rectPosition)
-                    //     .attr("height", height)
-                    //     .style('fill', 'steelblue');
-
-
-                    var pxDiff = x(new Date(scope.timesOnScope[1])) - x(new Date(scope.timesOnScope[0]))
-
-                    //set the position of the rectangle based off a Date() originally
-                    //and increment that date every X ms
-                    //won't have to worry about re-drawing it on zoom cuz
-                    //itll just happen anyway
-
-                    //this needs to be based off of the end of the path data
-                    //so it doesn't snap back every time you zoom
-                    // rect  
-                    //     .transition()
-                    //     .duration(60000)
-                    //     .ease('linear')
-                    //     .attr("transform", "translate(" + (pxDiff) + ",0)")
+                    // var pxDiff = x(new Date(scope.timesOnScope[1])) - x(new Date(scope.timesOnScope[0]))
                 }
 
                 scope.tick = function() {
-                    console.log('HIT', Date())
-
+                    // console.log('HIT', Date())
                     var duration = 60000;
                     // push a new data point onto the back
                     data = scope.energyData;
@@ -217,11 +191,6 @@ app.directive('energyGraph', function($interval) {
                         .duration(duration)
                         .ease("linear")
                         .each('end', scope.tick)
-
-
-                    //pop the old data point off the front
-                    // data.shift();
-
                 }
             }
         }
