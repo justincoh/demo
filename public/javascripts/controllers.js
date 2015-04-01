@@ -49,7 +49,7 @@ app.controller('MainCtrl', function($scope, data, $interval) {
                     // timesOnScope[dataPoint.x] = 1;
                     timesOnScope.push(dataPoint.x)
                     $scope.tickDataArray.push(dataPoint);
-                    // console.log('PUSHED ', dataPoint)
+                    console.log('PUSHED ', dataPoint)
                 }
             });
 
