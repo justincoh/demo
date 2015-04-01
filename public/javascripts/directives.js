@@ -12,18 +12,6 @@ app.directive('energyGraph', function($interval) {
             scope.buildGraph = function(energyData) {
                 var data = energyData;
 
-                // var max = d3.max(data, function(d) {
-                //     return d.date;
-                // });
-
-                // var min = d3.min(data, function(d) {
-                //     return d.date;
-                // });
-
-                // var n = scope.testData.data.length,
-                // random = d3.random.normal(0, .2),
-                // var data = scope.testData.data;
-
                 var margin = {
                         top: 20,
                         right: 20,
@@ -95,15 +83,9 @@ app.directive('energyGraph', function($interval) {
                     .attr("width", width)
                     .attr("height", height);
 
-                // var xAxis = svg.append("g")
-                //     .attr("class", "x axis")
-                //     .attr("transform", "translate(0," + y(0) + ")")
-                //     .call(d3.svg.axis().scale(x).orient("bottom"));
-
                 var xAxisZoom = d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    // .tickSize(-height);
 
                 svg.append('g')
                     .attr("class", "x axis")
@@ -116,9 +98,9 @@ app.directive('energyGraph', function($interval) {
                     .append('text')
                     .text('KW')
                     .style('font-size','16px')
-                    // .style('text-anchor','end')
                     .attr('x',5)
                     .attr('y',5)
+                
                 // var yAxisZoom = d3.svg.axis()
                 //     .scale(y)
                 //     .orient("left")
@@ -136,6 +118,9 @@ app.directive('energyGraph', function($interval) {
                     // .attr('d', line)
 
                 svg.select('path.line').data([data])
+
+
+
 
                 draw();
 
