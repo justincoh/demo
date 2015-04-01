@@ -81,25 +81,20 @@ app.directive('energyGraph', function($interval) {
                     .attr("class", "line")
                     .attr("d", line);
 
+                scope.tick = function() {
+                    
 
-
-                scope.tick = function(newData) {
-                    var duration = 1500;
+                    var duration = 60000;
                     // push a new data point onto the back
-                    data.push({
-                        'NYC OfficeTotalCost': 0.0033,
-                        x: '2015-03-31T20:56:00Z',
-                        date: new Date('2015-03-31T20:56:00Z'),
-                        'NYC Office': 0.9422
-                    });
+                    data = scope.energyData;
+                    data.push(scope.tickDataArray.shift());
+
 
                     var distanceBetweenTicks = x(data[1].date) - x(data[2].date)
 
                     //for using d3.zoom, later
                     // var totalDistance = x(data[0].date) - x(data[data.length-1].date)
-                    // console.log('TOTAL DIST ',totalDistance/data.length)
-
-
+                    
                     // redraw the line, and slide it to the left
                     path
                         .attr("d", line)
@@ -108,16 +103,18 @@ app.directive('energyGraph', function($interval) {
                         .duration(duration)
                         .ease("linear")
                         .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
-                        // .each("end", tick);
+                        .each("end", scope.tick);
+                    // console.log('TOTAL DIST ',totalDistance/data.length
+                    
 
+                    //rescaling has to be done after path draw
                     x = d3.time.scale()
                         //adding newest date to x axis scaling
-                        //could also translate this the new intermediate tick distance
-                        //and have all times show with this graph just getting longer
+                        //figure out how to get behavior.zoom to work
                         .domain([data[1].date, data[data.length - 1].date])
                         .range([0, width]);
 
-                    //Slides a new point onto the end of the graph
+                    //Slides axes left 1 minute
                     xAxis
                         .transition()
                         .duration(duration)
@@ -126,9 +123,9 @@ app.directive('energyGraph', function($interval) {
                         .call(d3.svg.axis().scale(x).orient("bottom"));
 
 
-                    // console.log(xAxis.call(d3.svg.axis().scale(x)))
-                    // pop the old data point off the front
-                    //figure out how to 
+                    //console.log(xAxis.call(d3.svg.axis().scale(x)))
+                    
+                    //pop the old data point off the front
                     data.shift();
 
                 }

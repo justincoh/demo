@@ -1,85 +1,52 @@
 'use strict';
 
-app.controller('MainCtrl', function($scope, data,$interval) {
-    
-
-    var end = new Date(Date.now());
-    var start = new Date(Date.now() - 600000); //600000 ms in 10 minutes
-
-    //on scope because directive needs them in tick();
-    $scope.endString = end.toISOString();
-    $scope.startString = start.toISOString();
+app.controller('MainCtrl', function($scope, data, $interval) {
 
 
-    // $interval(function(){
-    // 	console.log('INTERVAL')
-    // },10000)
+    var end = new Date(Date.now()); //offsetting by 1 minute to make sure the data is really there
+    var start = new Date(Date.now() - 660000); //660000 ms in 11 minutes
+
+    //Set up multiple arrays, so tick isn't ever waiting for anything
+    //it can just shift the newest element off the beginning of the list
+    //and requests are unrelated
 
 
     $scope.populate = function() {
 
         data.get({
-        	startTime: startString,
-        	endTime: endString,
+            startTime: start.toISOString(),
+            endTime: end.toISOString()
         }, function(res) {
-            res.data.forEach(function(dataPoint){
-            	dataPoint.date = new Date(dataPoint.x)
+            res.data.forEach(function(dataPoint) {
+                dataPoint.date = new Date(dataPoint.x)
             })
-            $scope.energyData = res.data;
-            $scope.buildGraph($scope.energyData) //comes from directive
-            startString=endString;
+            $scope.allData = res.data;
+            $scope.energyData = res.data.slice(0, res.data.length - 1);
+            // $scope.firstTickData=res.data.slice(res.data.length-1)[0];
+
+            $scope.tickDataArray = res.data.slice(res.data.length - 1)
+            $scope.buildGraph($scope.energyData) //buildgraph comes from directive
+            $scope.tick();
+
         })
     }
 
 
-
-
-    // $scope.testData = {
-    //     units: 'kW',
-    //     data: [{
-    //             'NYC OfficeTotalCost': 0,
-    //             x: '2015-03-31T20:47:00Z',
-    //             'NYC Office': 0
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0269,
-    //             x: '2015-03-31T20:48:00Z',
-    //             'NYC Office': 7.6819
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0268,
-    //             x: '2015-03-31T20:49:00Z',
-    //             'NYC Office': 7.6571
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0271,
-    //             x: '2015-03-31T20:50:00Z',
-    //             'NYC Office': 7.7314
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0266,
-    //             x: '2015-03-31T20:51:00Z',
-    //             'NYC Office': 7.5884
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0268,
-    //             x: '2015-03-31T20:52:00Z',
-    //             'NYC Office': 7.6683
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0268,
-    //             x: '2015-03-31T20:53:00Z',
-    //             'NYC Office': 7.6425
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0317,
-    //             x: '2015-03-31T20:54:00Z',
-    //             'NYC Office': 9.0627
-    //         }, {
-    //             'NYC OfficeTotalCost': 0.0579,
-    //             x: '2015-03-31T20:55:00Z',
-    //             'NYC Office': 10.5323
-    //         }
-    //         // , {  //Cutting out for graph update testing later
-    //         //     'NYC OfficeTotalCost': 0.0033,
-    //         //     x: '2015-03-31T20:56:00Z',
-    //         //     'NYC Office': 0.9422
-    //         // }
-    //     ],
-    //     names: ['NYC Office']
-    // }
-
+    $scope.testGet = function() {
+    	var now = new Date(Date.now());
+        var minuteAgo = new Date(Date.now() - 60000)
+        data.get({
+            startTime: minuteAgo.toISOString(),
+            endTime: now.toISOString()
+        }, function(res) {
+            res.data.forEach(function(dataPoint) {
+                dataPoint.date = new Date(dataPoint.x)
+            });
+            console.log(res.data[0])
+            $scope.tickDataArray.push(res.data[0])
+            console.log('TICK DATA ',$scope.tickDataArray)
+        })
+    }
+    $interval($scope.testGet,60000)
+    
 });

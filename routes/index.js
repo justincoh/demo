@@ -27,6 +27,7 @@ router.get('/data?', function(req, res) {
     request(requestOptions,function(err,response){
     	if(err) {console.log('err',err); res.json(err)};
     	var enertivRes = JSON.parse(response.body);
+    	console.log('enertivRes ',enertivRes)
     	res.json(enertivRes);
     })
 
