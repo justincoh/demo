@@ -7,10 +7,25 @@ app.directive('energyGraph', function() {
         link: function(scope, element, attrs) {
 
             //building graph
-            var n = 40,
+            //build off of viewport width
+            scope.testData.data.forEach(function(obj) {
+                obj.date = new Date(obj.x)
+            })
+
+            var max = d3.max(scope.testData.data, function(d) {
+                return d.date;
+            });
+
+            var min = d3.min(scope.testData.data, function(d) {
+                return d.date;
+            });
+
+            var n = scope.testData.data.length,
                 random = d3.random.normal(0, .2),
-                data = d3.range(n).map(random);
-            console.log('DATA ', data)
+                // data = d3.range(n).map(random);
+                data = scope.testData.data;
+
+            console.log(scope.testData.data);
 
             var margin = {
                     top: 20,
@@ -21,20 +36,27 @@ app.directive('energyGraph', function() {
                 width = 960 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom;
 
-            var x = d3.scale.linear()
-                .domain([0, n - 1])
-                .range([0, width]);
+            // var x = d3.scale.linear()
+            //     .domain([min, max])
+            //     .range([0, width]);
+
+            var x = d3.time.scale()
+                .domain([min, max])
+            	.range([0, width]);
+
+
 
             var y = d3.scale.linear()
-                .domain([-1, 1])
+                .domain([0, 20])
                 .range([height, 0]);
 
             var line = d3.svg.line()
                 .x(function(d, i) {
-                    return x(i);
+                    return x(d.date);
                 })
                 .y(function(d, i) {
-                    return y(d);
+
+                    return y(d['NYC Office']);
                 });
 
             var svg = d3.select("#graphContainer").append("svg")
@@ -65,23 +87,36 @@ app.directive('energyGraph', function() {
                 .attr("class", "line")
                 .attr("d", line);
 
-            tick();
+            
 
-            function tick() {
-
+            scope.tick=function() {
                 // push a new data point onto the back
-                data.push(random());
+                data.push({
+                    'NYC OfficeTotalCost': 0.0033,
+                    x: '2015-03-31T20:56:00Z',
+                    date: new Date('2015-03-31T20:56:00Z'),
+                    'NYC Office': 0.9422
+                });
+
+                var distanceBetweenTicks = x(data[1].date)-x(data[2].date)
+                
 
                 // redraw the line, and slide it to the left
                 path
                     .attr("d", line)
                     .attr("transform", null)
                     .transition()
-                    .duration(1500)
+                    .duration(2500)
                     .ease("linear")
-                    .attr("transform", "translate(" + x(-1) + ",0)")
-                    .each("end", tick);
+                    .attr("transform", "translate(" + (distanceBetweenTicks) + ",0)")
+                    //need to translate this 1 minute per tick
+                    // .each("end", tick);
 
+
+                    console.log(data)
+                    // console.log(test)
+                    
+                    // console.log(x(min)-x())
                 // pop the old data point off the front
                 data.shift();
 
