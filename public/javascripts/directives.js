@@ -146,12 +146,19 @@ app.directive('energyGraph', function($interval) {
                     
                     var rectPosition = x(dateObj)
 
+                    //fixing bug where rectangle is off screen
+                    var rectWidth;
+                    if(width-rectPosition<=0){
+                        rectWidth = 0;
+                    } else {
+                        rectWidth = width-rectPosition
+                    }
 
                     var rect = svg.append('rect')
                         .attr('class', 'cover')
                         .attr('x', rectPosition)
                         .attr('y', 0)
-                        .attr("width", width - rectPosition)
+                        .attr("width", rectWidth)
                         .attr("height", height)
                         .style('fill', 'white');
                 }
