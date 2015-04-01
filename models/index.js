@@ -1,17 +1,17 @@
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/npmTracker');
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error'));
+// mongoose.connect('mongodb://localhost/npmTracker');
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'connection error'));
 
-var Schema = mongoose.Schema;
+// var Schema = mongoose.Schema;
 
-var firstSchema = new Schema({
-    //figure out your schema(s)
-});
+// var firstSchema = new Schema({
+//     //don't bother for demo
+// });
 
-var first = mongoose.model('First', firstSchema);
+// var first = mongoose.model('First', firstSchema);
 
-module.exports = {
-    "thinkAboutThese": first
-};
+// module.exports = {
+//     "thinkAboutThese": first
+// };
