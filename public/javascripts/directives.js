@@ -47,13 +47,32 @@ app.directive('energyGraph', function($interval) {
                     .domain([startTime, endTime])
                     .range([0, width]);
 
+
+                var maxPower = d3.max(data,function(d){
+                    return data['NYC Office']
+                });
+                var minPower = d3.min(data,function(d){
+                    return data['NYC Office']
+                });
+
                 var y = d3.scale.linear()
-                    .domain([0, 20])
+                .domain([0,20])
+                    // .domain([minPower*.9, maxPower*1.1])
                     .range([height, 0]);
 
                 var line = d3.svg.line()
-                    // .interpolate('cardinal')
+                    // .interpolate(function(d,i){
+
+                    //     console.log('interpolator d',d)
+                    //     console.log('interpolator i',i)
+                    //     return 
+                    //     // return 'basis'
+                    // }) 
+                    //interpolator has to go in here, 
+                    //but has to be based off of index in data
                     .x(function(d, i) {
+                        // console.log('dx',d)
+                        // console.log('ix',i)
                         return x(d.date);
                     })
                     .y(function(d, i) {
@@ -128,6 +147,7 @@ app.directive('energyGraph', function($interval) {
                 svg.select('path.line').data([data])
 
                 draw();
+
                 function draw() {
                     svg.select("g.x.axis").call(xAxisZoom);
                     // svg.select("g.y.axis").call(yAxis);
@@ -154,9 +174,9 @@ app.directive('energyGraph', function($interval) {
                     var newData = scope.tickDataArray.shift()
                     data.push(newData);
 
-                    console.log('NEWDATA ',newData, x(newData.date),y(newData['NYC Office']))
-                    // console.log('LINE ',line()(newData))
-                    // need to interpolate from end of current path to this point
+                    console.log('NEWDATA ', newData, x(newData.date), y(newData['NYC Office']))
+                        // console.log('LINE ',line()(newData))
+                        // need to interpolate from end of current path to this point
 
 
                     // var pathTween = function(d,i,a){
@@ -167,10 +187,10 @@ app.directive('energyGraph', function($interval) {
 
                     //return the path attr with new stuff concatted ont he end
 
-                    var path =svg.select('path.line');
+                    var path = svg.select('path.line');
                     path
-                        // .data([data])
-                        .attr("d", line)
+                        .datum(data)
+                        .attr("d", line) //could throw an IF in here, based on data index TODO
                         // .attr("transform", null)
                         .transition()
                         .duration(duration)
@@ -182,7 +202,7 @@ app.directive('energyGraph', function($interval) {
                         // .attr("transform", "translate(" + (width/7) + ",0)") //moves the entire path
                         .each("end", scope.tick);
                     // console.log('TOTAL DIST ',totalDistance/data.length
-                        
+
 
                     //rescaling has to be done after path draw
                     // x = d3.time.scale()
@@ -204,7 +224,7 @@ app.directive('energyGraph', function($interval) {
                     //console.log(xAxis.call(d3.svg.axis().scale(x)))
 
                     //pop the old data point off the front
-                    data.shift();
+                    // data.shift();
 
                 }
             }
