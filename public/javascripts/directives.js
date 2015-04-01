@@ -1,13 +1,15 @@
 'use strict';
 
-app.directive('energyGraph', function() {
+app.directive('energyGraph', function($interval) {
     return {
         restrict: 'E',
         templateUrl: 'templates/energyGraph.html',
         link: function(scope, element, attrs) {
 
 
-
+            // $interval(function(){
+            //     console.log('DIRECTIVE INTERVAL')
+            // },4000)
             //building graph
             //build off of viewport width
             

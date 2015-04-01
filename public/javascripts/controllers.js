@@ -1,15 +1,22 @@
 'use strict';
 
-app.controller('MainCtrl', function($scope, data) {
+app.controller('MainCtrl', function($scope, data,$interval) {
     
 
     var end = new Date(Date.now());
     var start = new Date(Date.now() - 600000); //600000 ms in 10 minutes
 
-    var endString = end.toISOString();
-    var startString = start.toISOString();
+    //on scope because directive needs them in tick();
+    $scope.endString = end.toISOString();
+    $scope.startString = start.toISOString();
 
-    $scope.testFunc = function() {
+
+    // $interval(function(){
+    // 	console.log('INTERVAL')
+    // },10000)
+
+
+    $scope.populate = function() {
 
         data.get({
         	startTime: startString,
@@ -20,8 +27,11 @@ app.controller('MainCtrl', function($scope, data) {
             })
             $scope.energyData = res.data;
             $scope.buildGraph($scope.energyData) //comes from directive
+            startString=endString;
         })
     }
+
+
 
 
     // $scope.testData = {
