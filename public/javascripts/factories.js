@@ -1,5 +1,5 @@
 'use strict';
 
-app.factory('placeholder',function($resource){
-    return $resource('/placeholder');
+app.factory('data',function($resource){
+    return $resource('/data');
 });
