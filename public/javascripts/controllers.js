@@ -3,7 +3,7 @@
 app.controller('MainCtrl', function($scope, data, $interval) {
 
 
-    var end = new Date(Date.now()); //offsetting by 1 minute to make sure the data is really there
+    var end = new Date(Date.now()-60000); //offsetting by 1 minute to make sure the data is really there
     var start = new Date(Date.now() - 660000); //660000 ms in 11 minutes
 
     //Set up multiple arrays, so tick isn't ever waiting for anything
@@ -42,8 +42,9 @@ app.controller('MainCtrl', function($scope, data, $interval) {
             res.data.forEach(function(dataPoint) {
                 dataPoint.date = new Date(dataPoint.x)
             });
-            console.log(res.data[0])
+            console.log('Interval Data ',res.data)
             $scope.tickDataArray.push(res.data[0])
+            $scope.allData.push(res.data[0])
             console.log('TICK DATA ',$scope.tickDataArray)
         })
     }
