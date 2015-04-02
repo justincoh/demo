@@ -68,7 +68,7 @@ app.directive('energyGraph', function($interval) {
                 var zoom = d3.behavior.zoom()
                     .x(x)
                     // .y(y)
-                    // .xExtent([graphMin ,graphMax])  //Not yet released :(, used if below
+                    // .xExtent([graphMin ,graphMax])  //Not yet released :(, used if() in draw()
                     .scaleExtent([1, 288])
                     .on("zoom", draw);
 
@@ -93,12 +93,13 @@ app.directive('energyGraph', function($interval) {
 
                 var xAxisZoom = d3.svg.axis()
                     .scale(x)
-                    .orient("bottom")
+                    .orient("bottom");
 
                 svg.append('g')
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + y(0) + ")")
-                    .call(xAxisZoom)
+                    .call(xAxisZoom);
+
 
                 svg.append("g")
                     .attr("class", "y axis")
@@ -128,40 +129,30 @@ app.directive('energyGraph', function($interval) {
                 svg.select('path.line')
                     .data([data])
                     .on('mouseover', function(d) {
-                        var test = d3.mouse(this)
-                        var time = x.invert(test[0]).toLocaleTimeString()
-                        var kW = y.invert(test[1]).toFixed(2);
-                        var template = time+': '+'<br>'+kW+' kW';
-                        console.log(d3.event.pageX)
-                        console.log(d3.event.pageY)
-                        // var template = [time,kW,'kW']
-                        // console.log(x.invert(test[0]).toLocaleTimeString())
-                        // console.log(y.invert(test[1]));
-                        tooltip
-                            .style('left',(d3.event.pageX - 40) + 'px')
-                            .style('top', (d3.event.pageY - 30) + 'px')
-                        tooltip.html([template]);
-                        tooltip.style('opacity',1);
+                        buildTooltip.call(this);
                     })
                     .on('mousemove',function(){
-                        tooltip
-                            .style('left',(d3.event.pageX - 40) + 'px')
-                            .style('top', (d3.event.pageY - 30) + 'px')
+                        buildTooltip.call(this);
                     })
                     .on('mouseout',function(){
                         tooltip.transition()
-                            .duration(1500)
+                            .duration(500)
                             .style('opacity',0)
                     })
 
+                var tooltip = d3.select('#tooltip')
 
-                    var tooltip = d3.select('#tooltip')
-
-                        
-
-                // function buildTooltip(xPos,xData,yPos,yData){
-                //     var tooltipRect = svg.select('rect')
-                // }
+                function buildTooltip(){
+                    var scaleData = d3.mouse(this)
+                        var time = x.invert(scaleData[0]).toLocaleTimeString()
+                        var kW = y.invert(scaleData[1]).toFixed(2);
+                        var template = time+'<br>'+kW+' kW';
+                        tooltip
+                            .style('left',(d3.event.pageX - 40) + 'px')
+                            .style('top', (d3.event.pageY - 70) + 'px')
+                        tooltip.html([template]);
+                        tooltip.style('opacity',1);
+                };
 
 
 
