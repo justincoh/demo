@@ -68,7 +68,7 @@ app.directive('energyGraph', function($interval) {
                 var zoom = d3.behavior.zoom()
                     .x(x)
                     // .y(y)
-                    // .xExtent([graphMin ,graphMax])  Not officially available yet
+                    // .xExtent([graphMin ,graphMax])  //Not yet released :(, used if below
                     .scaleExtent([1, 288])
                     .on("zoom", draw);
 
@@ -105,10 +105,10 @@ app.directive('energyGraph', function($interval) {
                     .call(d3.svg.axis().scale(y).orient("left"))
                     .append('text')
                     .text('kW')
-                    .style('font-size','16px')
-                    .attr('x',5)
-                    .attr('y',5)
-                
+                    .style('font-size', '16px')
+                    .attr('x', 5)
+                    .attr('y', 5)
+
                 // var yAxisZoom = d3.svg.axis()
                 //     .scale(y)
                 //     .orient("left")
@@ -125,26 +125,60 @@ app.directive('energyGraph', function($interval) {
                     // .datum(data)
                     // .attr('d', line)
 
-                svg.select('path.line').data([data])
+                svg.select('path.line')
+                    .data([data])
+                    .on('mouseover', function(d) {
+                        var test = d3.mouse(this)
+                        var time = x.invert(test[0]).toLocaleTimeString()
+                        var kW = y.invert(test[1]).toFixed(2);
+                        var template = time+': '+'<br>'+kW+' kW';
+                        console.log(d3.event.pageX)
+                        console.log(d3.event.pageY)
+                        // var template = [time,kW,'kW']
+                        // console.log(x.invert(test[0]).toLocaleTimeString())
+                        // console.log(y.invert(test[1]));
+                        tooltip
+                            .style('left',(d3.event.pageX - 40) + 'px')
+                            .style('top', (d3.event.pageY - 30) + 'px')
+                        tooltip.html([template]);
+                        tooltip.style('opacity',1);
+                    })
+                    .on('mousemove',function(){
+                        tooltip
+                            .style('left',(d3.event.pageX - 40) + 'px')
+                            .style('top', (d3.event.pageY - 30) + 'px')
+                    })
+                    .on('mouseout',function(){
+                        tooltip.transition()
+                            .duration(1500)
+                            .style('opacity',0)
+                    })
 
+
+                    var tooltip = d3.select('#tooltip')
+
+                        
+
+                // function buildTooltip(xPos,xData,yPos,yData){
+                //     var tooltipRect = svg.select('rect')
+                // }
 
 
 
                 draw();
 
 
-
-                function buildRectangle(dateObj){
+                function buildRectangle(dateObj) {
                     d3.select('rect.cover').remove();
-                    
+
                     var rectPosition = x(dateObj)
 
                     //fixing bug where rectangle is off screen
                     var rectWidth;
-                    if(width-rectPosition<=0){
+                    if (width - rectPosition <= 0) {
                         rectWidth = 0;
                     } else {
-                        rectWidth = width-rectPosition
+                        rectWidth = width - rectPosition
                     }
 
                     var rect = svg.append('rect')
@@ -162,26 +196,28 @@ app.directive('energyGraph', function($interval) {
                 var rectangleTime = new Date(thirdToLast);
                 buildRectangle(rectangleTime);
 
+                //Rectangle is never translated, it re-renders every 50ms
+                //with a 50ms offset, looks the same
                 var intervalTimer = 50;
-                $interval(function(){
+                $interval(function() {
                     var rect = svg.select('rect.cover')
-                    rectangleTime.setTime(rectangleTime.getTime()+intervalTimer)
+                    rectangleTime.setTime(rectangleTime.getTime() + intervalTimer)
                     buildRectangle(rectangleTime)
-                },intervalTimer)
+                }, intervalTimer)
 
                 function draw() {
                     //if blocks handle zoom/pan limits
-                    if(x.domain()[0]<startTime){
-                        var k = zoom.translate()[0] - x(startTime)+x.range()[0];
-                        zoom.translate([k,0]);
-                    } else if(x.domain()[1]>endTime){
+                    if (x.domain()[0] < startTime) {
+                        var k = zoom.translate()[0] - x(startTime) + x.range()[0];
+                        zoom.translate([k, 0]);
+                    } else if (x.domain()[1] > endTime) {
                         var k = zoom.translate()[0] - x(endTime) + x.range()[1];
                         zoom.translate([k, 0]);
                     }
 
                     svg.select("g.x.axis").call(xAxisZoom);
                     svg.select("path.line").attr("d", line);
-                    
+
                 }
 
                 scope.tick = function() {
