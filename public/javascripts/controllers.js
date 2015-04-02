@@ -6,12 +6,12 @@ app.controller('MainCtrl', function($scope, data, $interval) {
     // var $scope.timesOnScope={};
     $scope.timesOnScope = [];
     //for preventing dupes later, am going to have to overlap request 
-    //and filter dupes due to weird api responses
+    //and filter due to strange api responses
 
     $scope.populate = function() {
         var end = new Date(Date.now() - 120000); //offsetting by 2 minute to make sure the data is really there
         var start = new Date();
-        start.setHours(20);
+        start.setHours(0);
         start.setMinutes(0);
 
         data.get({
@@ -19,7 +19,8 @@ app.controller('MainCtrl', function($scope, data, $interval) {
             endTime: end.toISOString()
         }, function(res) {
             if(typeof res.data === 'undefined'){
-                return $scope.error = 'Issue Retrieving Data, Refresh';
+                //need a debounce or something to call populate again after delay
+                return $scope.error = 'Issue Retrieving Data, Refresh The Page';
             }
             res.data.forEach(function(dataPoint) {
                 dataPoint.date = new Date(dataPoint.x);
@@ -57,7 +58,7 @@ app.controller('MainCtrl', function($scope, data, $interval) {
                             // $scope.timesOnScope[dataPoint.x] = 1;
                         $scope.timesOnScope.push(dataPoint.x)
                         $scope.tickDataArray.push(dataPoint);
-                        console.log('PUSHED ', dataPoint)
+                        // console.log('PUSHED ', dataPoint)
                     }
                 })
             } else{
