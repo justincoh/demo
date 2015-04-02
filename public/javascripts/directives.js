@@ -108,7 +108,7 @@ app.directive('energyGraph', function($interval) {
                     .text('kW')
                     .style('font-size', '16px')
                     .attr('x', 5)
-                    .attr('y', 5)
+                    .attr('y', 0)
 
                 // var yAxisZoom = d3.svg.axis()
                 //     .scale(y)
@@ -164,7 +164,12 @@ app.directive('energyGraph', function($interval) {
 
                     var rectPosition = x(dateObj)
 
-                    //fixing bug where rectangle is off screen
+                    //fixing rectangle covering y axis
+                    if(rectPosition<=0){
+                        return;
+                    }
+
+                    //fixing bug where rectangle is off screen to right
                     var rectWidth;
                     if (width - rectPosition <= 0) {
                         rectWidth = 0;
