@@ -8,6 +8,13 @@ app.directive('energyGraph', function($interval) {
 
             //building graph
             //build off of viewport width
+            var graphMin = new Date();
+            graphMin.setHours(0);
+            graphMin.setMinutes(0);
+
+            var graphMax = new Date();
+            graphMax.setHours(23);
+            graphMax.setMinutes(59);
 
             scope.buildGraph = function(energyData) {
                 var data = energyData;
@@ -61,6 +68,7 @@ app.directive('energyGraph', function($interval) {
                 var zoom = d3.behavior.zoom()
                     .x(x)
                     // .y(y)
+                    // .xExtent([graphMin ,graphMax])  Not officially available yet
                     .scaleExtent([1, 288])
                     .on("zoom", draw);
 
@@ -96,7 +104,7 @@ app.directive('energyGraph', function($interval) {
                     .attr("class", "y axis")
                     .call(d3.svg.axis().scale(y).orient("left"))
                     .append('text')
-                    .text('KW')
+                    .text('kW')
                     .style('font-size','16px')
                     .attr('x',5)
                     .attr('y',5)
@@ -162,13 +170,21 @@ app.directive('energyGraph', function($interval) {
                 },intervalTimer)
 
                 function draw() {
+                    //if blocks handle zoom/pan limits
+                    if(x.domain()[0]<startTime){
+                        var k = zoom.translate()[0] - x(startTime)+x.range()[0];
+                        zoom.translate([k,0]);
+                    } else if(x.domain()[1]>endTime){
+                        var k = zoom.translate()[0] - x(endTime) + x.range()[1];
+                        zoom.translate([k, 0]);
+                    }
+
                     svg.select("g.x.axis").call(xAxisZoom);
                     svg.select("path.line").attr("d", line);
-                    // var pxDiff = x(new Date(scope.timesOnScope[1])) - x(new Date(scope.timesOnScope[0]))
+                    
                 }
 
                 scope.tick = function() {
-                    // console.log('HIT', Date())
                     var duration = 60000;
                     // push a new data point onto the back
                     data = scope.energyData;
