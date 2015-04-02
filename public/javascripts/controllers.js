@@ -11,7 +11,7 @@ app.controller('MainCtrl', function($scope, data, $interval) {
     $scope.populate = function() {
         var end = new Date(Date.now() - 120000); //offsetting by 2 minute to make sure the data is really there
         var start = new Date();
-        start.setHours(0);
+        start.setHours(20);
         start.setMinutes(0);
 
         data.get({
