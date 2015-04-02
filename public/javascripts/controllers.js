@@ -18,6 +18,9 @@ app.controller('MainCtrl', function($scope, data, $interval) {
             startTime: start.toISOString(),
             endTime: end.toISOString()
         }, function(res) {
+            if(typeof res.data === 'undefined'){
+                return $scope.error = 'Issue Retrieving Data, Refresh';
+            }
             res.data.forEach(function(dataPoint) {
                 dataPoint.date = new Date(dataPoint.x);
                 // $scope.timesOnScope[dataPoint.x]=1;

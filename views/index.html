@@ -8,8 +8,9 @@
 
 <body ng-app='enertivDemo' ng-controller='MainCtrl'>
     <div class="container">
-    	<div ng-cloak class="text-center"><h3>Energy Consumption for {{displayDate}}</h3></div>
+    	<div ng-cloak ng-hide='error' class="text-center"><h3>Energy Consumption for {{displayDate}}</h3></div>
         <!-- <button class="btn btn-warning" ng-click='populate()'>Populate</button> -->
+        <div ng-show='error'><h3 class='text-center'>{{error}}</h3></div>
         <energy-graph></energy-graph>
 
     </div>
